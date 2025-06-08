@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RaaS Client</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- D3.js CDN -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="/static/topology_graph.js"></script>
+    <!-- Prism.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+    <!-- Your own JS for topology/graph handling -->
+    <script src="/static/raas_topology.js"></script>
+    <!-- Optional: metric/algorithm handling -->
+    <script src="/static/raas_metric.js"></script>
+</head>
+<body>
+    <h1>Hybrid SDN Path Computation (RaaS Client)</h1>
+    <form method="post" action="/connect-odl">
+        <label>ODL IP:</label> <input type="text" name="odl_ip" required><br>
+        <label>Port:</label> <input type="text" name="odl_port" value="8181" required><br>
+        <label>Username:</label> <input type="text" name="odl_user" value="admin" required><br>
+        <label>Password:</label> <input type="password" name="odl_pass" value="admin" required><br>
+        <input type="submit" value="Fetch Topology">
+    </form>
+    {% if result %}
+        <p>{{ result }}</p>
+    {% endif %}
+
+    {% if topology and topology|length > 0 and not topology[0].get('error') %}
+
+        <details open>
+            <summary><b>Topology Edges (JSON)</b></summary>
+            <div style="padding: 1em;">
+                <pre style="max-height: 350px; overflow:auto; border-radius:10px;">
+<code class="language-json" id="json-highlight"></code>
+                </pre>
+            </div>
+        </details>
+
+        <details open style="margin-top:1.5em;">
+            <summary><b>Topology Graph</b></summary>
+            <div style="padding:1em;">
+                <!-- Zoom instructions -->
+                <div style="margin-bottom: 10px;">
+                    <span>Zoom: Mouse wheel or pinch | Pan: Drag canvas</span>
+                </div>
+                <div id="graph" style="resize:both; overflow:auto; min-width:300px; min-height:200px; width:600px; height:400px; border: 1.5px solid #3a6ea5; border-radius:12px; box-shadow:0 2px 6px #bcd;">
+                    <!-- D3 graph renders here -->
+                </div>
+            </div>
+        </details>
+
+        <!-- Metric Formulation & Algorithm Section could go here if needed -->
+        {% if topology and topology|length > 0 and not topology[0].get('error') %}
+    <!-- ... Topology Edges and Topology Graph sections ... -->
+
+    <!-- Metric Formulation & Algorithm Section -->
+    <details id="metric-section" open style="margin-top:1.5em;">
+        <summary><b>Metric Formulation & Path Algorithm</b></summary>
+        <div style="padding:1em;">
+            <form id="metric-form" onsubmit="return false;">
+                <label><b>Attributes:</b></label>
+                <input type="text" id="attributes" name="attributes"
+                       placeholder="e.g. bandwidth,delay,loss"
+                       style="width:300px;">
+                <button type="button" onclick="setupWeights()">Set</button>
+                <div id="weights-section" style="margin-top:1em;"></div>
+                <div id="weight-warning" style="color:red; display:none; margin-top:0.5em;">
+                    Sum of weights must be 1. All values reset to 1/N.
+                </div>
+                <br>
+                <label><b>Algorithm Name:</b></label>
+            <select id="algo-select" name="algo-select">
+                <optgroup label="Unweighted Shortest Path (BFS)">
+                    <option value="shortest_path">Shortest Path (`shortest_path`)</option>
+                    <option value="all_shortest_paths">All Shortest Paths (`all_shortest_paths`)</option>
+                </optgroup>
+                <optgroup label="Dijkstra's Algorithm (Weighted)">
+                    <option value="dijkstra_path">Dijkstra Path (`dijkstra_path`)</option>
+                    <option value="dijkstra_path_length">Dijkstra Path Length (`dijkstra_path_length`)</option>
+                    <option value="single_source_dijkstra">Single Source Dijkstra (`single_source_dijkstra`)</option>
+                    <option value="all_pairs_dijkstra_path">All Pairs Dijkstra Path (`all_pairs_dijkstra_path`)</option>
+                </optgroup>
+                <optgroup label="Bellman-Ford Algorithm (Weighted, Negative Weights)">
+                    <option value="bellman_ford_path">Bellman-Ford Path (`bellman_ford_path`)</option>
+                    <option value="bellman_ford_path_length">Bellman-Ford Path Length (`bellman_ford_path_length`)</option>
+                    <option value="single_source_bellman_ford">Single Source Bellman-Ford (`single_source_bellman_ford`)</option>
+                    <option value="all_pairs_bellman_ford_path">All Pairs Bellman-Ford Path (`all_pairs_bellman_ford_path`)</option>
+                </optgroup>
+                <optgroup label="Bidirectional Dijkstra">
+                    <option value="bidirectional_dijkstra">Bidirectional Dijkstra (`bidirectional_dijkstra`)</option>
+                </optgroup>
+                <optgroup label="A* Search (Heuristic)">
+                    <option value="astar_path">A* Path (`astar_path`)</option>
+                    <option value="astar_path_length">A* Path Length (`astar_path_length`)</option>
+                </optgroup>
+            </select>
+
+                <br><br>
+                <button type="button" onclick="handleMetricSubmit()">Submit Metric & Algorithm</button>
+            </form>
+        </div>
+    </details>
+
+    <details id="path-results-panel" open style="margin-top:1.5em;">
+        <summary><b>Computed Paths</b></summary>
+        <div id="path-results" style="padding:1em;"></div>
+    </details>
+    {% endif %}
+        <script>
+            // Prepare data for JS (template variables)
+            window.raas_topology_data = {
+                edges: {{ topology | tojson }}
+            };
+        </script>
+        <!-- The rest is handled in raas_topology.js and raas_metric.js -->
+    {% elif topology and topology[0].get('error') %}
+        <p style="color: red;">Error: {{ topology[0]['error'] }}</p>
+    {% endif %}
+</body>
+</html>

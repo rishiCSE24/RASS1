@@ -1,0 +1,85 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+    background: #f7f7f7;
+}
+
+h1 {
+    color: #3a6ea5;
+    margin-bottom: 16px;
+}
+
+form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px #ccc;
+    margin-bottom: 24px;
+    max-width: 400px;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+}
+
+input[type="text"], input[type="password"] {
+    width: 98%;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #aaa;
+    margin-top: 3px;
+}
+
+input[type="submit"] {
+    margin-top: 16px;
+    background: #3a6ea5;
+    color: white;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+input[type="submit"]:hover {
+    background: #274e7a;
+}
+
+pre {
+    background: #e7eef7;
+    padding: 10px;
+    border-radius: 6px;
+    max-width: 700px;
+    overflow-x: auto;
+}
+
+#graph {
+    background: #f7fafe;
+    min-width: 300px;
+    min-height: 200px;
+    resize: both;
+    overflow: auto;
+    border: 1.5px solid #3a6ea5;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px #bcd;
+    margin-bottom: 1em;
+}
+
+details {
+    margin-bottom: 1em;
+}
+
+details > summary {
+    font-size: 1.13em;
+    cursor: pointer;
+    padding: 5px 0;
+}
+
+pre {
+    background: #23272e;
+    color: #f8f8f2;
+    border-radius: 10px;
+    font-size: 1em;
+    padding: 0.7em 1em;
+}
